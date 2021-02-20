@@ -1,0 +1,4 @@
+__pycache__
+config.toml
+.vscode
+mydata.db

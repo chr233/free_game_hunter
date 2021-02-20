@@ -1,0 +1,18 @@
+[bot] # 机器人设置
+
+# 机器人名称,不能设置为asf
+bot_name = '1'
+# 多个机器人可以设置写成这样
+# bot_name = ['1','2','3']
+
+[asf] # asf设置
+
+# ipc地址
+ipc_addr = 'http://localhost:1242'
+# ipc连接密码,没有密码的话留空
+ipc_password = ''
+
+[db] # 数据库配置
+
+# 数据库名称
+db_name = 'data.db'
