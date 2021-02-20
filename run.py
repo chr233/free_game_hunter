@@ -2,11 +2,12 @@
 # @Author       : Chr_
 # @Date         : 2021-02-19 11:13:57
 # @LastEditors  : Chr_
-# @LastEditTime : 2021-02-20 14:26:39
+# @LastEditTime : 2021-02-20 22:57:57
 # @Description  : 启动入口
 '''
 
 import asyncio
+import traceback
 from time import time
 from cfg import get_cfg
 import db
@@ -58,28 +59,40 @@ async def process_bot(conn: db.sqlite3.Connection, bot: str, free_game: list):
 
 
 async def main():
-    conn = db.get_conn()
-    cur = conn.cursor()
-    if check_cache(conn):
-        print('即将更新缓存,速度较慢,请耐心等待')
-        free_game = steam.get_free_games(False)
-        cache_game = db.get_cache_game(cur, False)
+    try:
+        conn = db.get_conn()
+        cur = conn.cursor()
+        if check_cache(conn):
+            print('即将更新缓存,速度较慢,请耐心等待')
+            free_game = steam.get_free_games(False)
+            cache_game = db.get_cache_game(cur, False)
 
-        new_game = check_appids(free_game, cache_game)
-        db.add_cache_game(cur, new_game)
-        db.set_status(cur, 'update', int(time()))
-        print('缓存更新完成')
-        conn.commit()
-    else:
-        print('使用缓存数据')
-        free_game = db.get_cache_game(cur, False)
-    cur.close()
+            new_game = check_appids(free_game, cache_game)
+            db.add_cache_game(cur, new_game)
+            db.set_status(cur, 'update', int(time()))
+            print('缓存更新完成')
+            conn.commit()
+        else:
+            print('使用缓存数据')
+            free_game = db.get_cache_game(cur, False)
+        cur.close()
 
-    bots = get_cfg('bot')['bot_name']
-    for i, bot in enumerate(bots, 1):
-        print(f'进度{i}/{len(bots)} 机器人 {bot}')
-        await process_bot(conn, bot, free_game)
-    print('运行结束')
+        bots = get_cfg('bot')['bot_name']
+        for i, bot in enumerate(bots, 1):
+            print(f'进度{i}/{len(bots)} 机器人 {bot}')
+            await process_bot(conn, bot, free_game)
+
+        cur=conn.cursor()
+        count =db.get_status('added')
+        cur.close()
+        conn.close()
+        print(f'总计添加 {count} 个免费游戏')
+        print('运行结束')
+    except Exception as e:
+        print('运行出错')
+        print(e)
+        traceback.print_stack()
+        input('按回车键退出……')
 
 loop = asyncio.get_event_loop()
 output = loop.run_until_complete(main())

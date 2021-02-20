@@ -3,3 +3,4 @@ config.toml
 .vscode
 mydata.db
 *.log
+release

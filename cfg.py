@@ -2,7 +2,7 @@
 # @Author       : Chr_
 # @Date         : 2021-02-19 12:11:05
 # @LastEditors  : Chr_
-# @LastEditTime : 2021-02-20 11:09:37
+# @LastEditTime : 2021-02-20 23:20:59
 # @Description  : 存取设置
 '''
 
@@ -34,8 +34,7 @@ def load_cfg():
 
     def parse_db(r: dict) -> dict:
         name = r.get('db_name')
-        path = os.path.dirname(os.path.abspath(__file__))
-        return {'db_name': os.path.join(path, name)}
+        return {'db_name': name}
 
     with open('config.toml', 'r', encoding='utf-8') as f:
         raw_cfg = toml.load(f)
