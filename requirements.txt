@@ -1,4 +1,3 @@
-sqlite3
 asf_ipc
 requests
 toml
