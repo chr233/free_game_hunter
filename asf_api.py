@@ -2,7 +2,7 @@
 # @Author       : Chr_
 # @Date         : 2021-02-19 11:21:37
 # @LastEditors  : Chr_
-# @LastEditTime : 2021-02-20 14:18:53
+# @LastEditTime : 2021-03-05 13:45:04
 # @Description  : ASF接口
 '''
 
@@ -10,6 +10,9 @@ from typing import Tuple
 from cfg import get_cfg
 import asyncio
 from ASF import IPC
+
+# 无法入库的游戏
+BLACK_LIST = {370, 440, 570}
 
 
 def init_IPC():
@@ -37,6 +40,10 @@ async def check_owned_game(bot: str, appids: list) -> Tuple[list, list]:
         owned = []
         not_owned = []
         for app in appids:
+            if app in BLACK_LIST:
+                owned.append(app)
+                continue
+
             resp = await exec_commend(ipc, f'owns {bot} app/{app}')
             # print(resp)
             if '<ASF>' in resp or '已拥有' in resp:
@@ -45,7 +52,7 @@ async def check_owned_game(bot: str, appids: list) -> Tuple[list, list]:
             else:
                 print(f'{bot} 未拥有 {app}')
                 not_owned.append(app)
-                if len(not_owned) > 40 :
+                if len(not_owned) > 40:
                     break
     return (owned, not_owned)
 
@@ -64,11 +71,3 @@ async def add_free_game(bot: str, appids: list) -> list:
             else:
                 print(f'{bot} 添加失败 {app}')
     return added
-
-
-if __name__ == '__main__':
-    async def main():
-        await add_free_game('1', [123, 1329410, 730, 1402460])
-    loop = asyncio.get_event_loop()
-    output = loop.run_until_complete(main())
-    loop.close()

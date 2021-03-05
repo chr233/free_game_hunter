@@ -2,7 +2,7 @@
 # @Author       : Chr_
 # @Date         : 2021-02-19 12:11:14
 # @LastEditors  : Chr_
-# @LastEditTime : 2021-02-20 12:43:44
+# @LastEditTime : 2021-03-05 13:41:41
 # @Description  : Steam商店API
 '''
 import re
@@ -35,7 +35,7 @@ def get_free_games(get_total:bool =False) -> list:
 
     j = get_store_page(0)
     total = j.get('total_count', 0)
-    print(f'共有{total}个免费游戏')
+    print(f'商店共有 {total} 个免费游戏')
 
     if get_total:
         return total

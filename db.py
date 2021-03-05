@@ -2,7 +2,7 @@
 # @Author       : Chr_
 # @Date         : 2021-02-19 16:16:53
 # @LastEditors  : Chr_
-# @LastEditTime : 2021-02-20 13:46:22
+# @LastEditTime : 2021-03-05 13:49:55
 # @Description  : 数据库api
 '''
 
@@ -47,6 +47,9 @@ def get_owned_game(cur: sqlite3.Cursor, bot: str, get_total: bool = False) -> li
         appids.extend(t)
     return appids
 
+def reset_cache_game(cur:sqlite3.Cursor):
+    cur.execute('DELETE from "cache"')
+    print('缓存数据已清除')
 
 def add_cache_game(cur: sqlite3.Cursor, appids: list):
     '''添加免费游戏缓存'''
@@ -55,7 +58,6 @@ def add_cache_game(cur: sqlite3.Cursor, appids: list):
             cur.execute('INSERT INTO "cache"("appid") VALUES (?)', (app, ))
         except sqlite3.IntegrityError:
             print(f'数据已存在 - {app}')
-
 
 def get_cache_game(cur: sqlite3.Cursor, get_total: bool = False) -> list:
     '''获取免费游戏缓存'''

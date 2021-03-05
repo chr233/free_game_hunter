@@ -2,7 +2,7 @@
 # @Author       : Chr_
 # @Date         : 2021-02-19 11:13:57
 # @LastEditors  : Chr_
-# @LastEditTime : 2021-02-20 22:57:57
+# @LastEditTime : 2021-03-05 14:04:48
 # @Description  : 启动入口
 '''
 
@@ -21,22 +21,31 @@ def check_appids(A: list, B: list) -> list:
     return C
 
 
+def remove_duplicate(A: list) -> list:
+    '''列表去重'''
+    C = list(set(A))
+    return C
+
+
 def check_cache(conn: db.sqlite3.Connection):
     '''检查缓存,判断是否需要更新'''
     cur = conn.cursor()
 
+    duplicate = db.get_status(cur, 'duplicate')
     cache_total = db.get_cache_game(cur, True)
     store_total = steam.get_free_games(True)
 
     update_time = db.get_status(cur, 'update')
     curr_time = int(time())
 
-    flag = curr_time - update_time > 604800 or store_total - cache_total > 50
+    flag = curr_time - update_time > 604800 or abs(store_total - cache_total - duplicate) > 10
+
     print('需要更新缓存' if flag else '无需更新缓存')
     return flag
 
 
 async def process_bot(conn: db.sqlite3.Connection, bot: str, free_game: list):
+    '''处理每个机器人的任务'''
     cur = conn.cursor()
     db_owned = db.get_owned_game(cur, bot)
     cur.close()
@@ -59,21 +68,32 @@ async def process_bot(conn: db.sqlite3.Connection, bot: str, free_game: list):
 
 
 async def main():
+    '''主程序'''
     try:
         conn = db.get_conn()
-        cur = conn.cursor()
+    
         if check_cache(conn):
             print('即将更新缓存,速度较慢,请耐心等待')
             free_game = steam.get_free_games(False)
-            cache_game = db.get_cache_game(cur, False)
+            free_game_d = remove_duplicate(free_game)
+            duplicate = len(free_game)-len(free_game_d)
+            print(f'共有 {duplicate} 个重复的游戏')
 
-            new_game = check_appids(free_game, cache_game)
-            db.add_cache_game(cur, new_game)
-            db.set_status(cur, 'update', int(time()))
-            print('缓存更新完成')
+            cur=conn.cursor()
+            db.reset_cache_game(cur)
             conn.commit()
+            cur=conn.cursor()
+            db.add_cache_game(cur, free_game_d)
+            conn.commit()
+            cur=conn.cursor()
+            db.set_status(cur, 'update', int(time()))
+            db.set_status(cur, 'duplicate', duplicate)
+            conn.commit()
+            print('缓存更新完成')
         else:
             print('使用缓存数据')
+            
+            cur = conn.cursor()
             free_game = db.get_cache_game(cur, False)
         cur.close()
 
@@ -82,8 +102,8 @@ async def main():
             print(f'进度{i}/{len(bots)} 机器人 {bot}')
             await process_bot(conn, bot, free_game)
 
-        cur=conn.cursor()
-        count =db.get_status('added')
+        cur = conn.cursor()
+        count = db.get_status(cur, 'added')
         cur.close()
         conn.close()
         print(f'总计添加 {count} 个免费游戏')
