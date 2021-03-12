@@ -2,7 +2,7 @@
 # @Author       : Chr_
 # @Date         : 2021-02-19 12:11:14
 # @LastEditors  : Chr_
-# @LastEditTime : 2021-03-05 13:41:41
+# @LastEditTime : 2021-03-12 18:25:08
 # @Description  : Steam商店API
 '''
 import re
@@ -17,7 +17,7 @@ def get_free_games(get_total:bool =False) -> list:
 
     def get_store_page(start: int = 0):
         '''获取商店单页内容'''
-        url = f'https://store.steampowered.com/search/results/?query&start={start}&count=50&dynamic_data=&sort_by=_ASC&maxprice=free&category1=998&infinite=1'
+        url = f'https://store.steampowered.com/search/results/?query&start={start}&count=50&dynamic_data=&sort_by=_ASC&maxprice=free&category1=998%2C990&infinite=1'
         resp = ss.get(url=url, headers=HEADERS)
         for _ in range(3):
             try:
