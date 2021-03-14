@@ -2,7 +2,7 @@
 # @Author       : Chr_
 # @Date         : 2021-02-19 11:21:37
 # @LastEditors  : Chr_
-# @LastEditTime : 2021-03-14 15:56:45
+# @LastEditTime : 2021-03-14 15:59:21
 # @Description  : ASF接口
 '''
 
@@ -52,8 +52,8 @@ async def check_owned_game(bot: str, appids: list) -> Tuple[list, list]:
             else:
                 print(f'{bot} 未拥有 {app}')
                 not_owned.append(app)
-                if len(not_owned) > 100:
-                    break
+                # if len(not_owned) > 100:
+                #     break
     return (owned, not_owned)
 
 
@@ -72,6 +72,6 @@ async def add_free_game(bot: str, appids: list) -> list:
                 add_count += 1
             else:
                 print(f'{bot} 添加失败 {app}')
-            if add_count >=45:
+            if add_count >= 45:
                 break
     return added
