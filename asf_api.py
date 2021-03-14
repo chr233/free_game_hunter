@@ -2,10 +2,11 @@
 # @Author       : Chr_
 # @Date         : 2021-02-19 11:21:37
 # @LastEditors  : Chr_
-# @LastEditTime : 2021-03-14 16:11:01
+# @LastEditTime : 2021-03-14 16:12:13
 # @Description  : ASF接口
 '''
 
+from typing import List, Tuple
 from cfg import get_cfg
 import asyncio
 from ASF import IPC
@@ -32,7 +33,7 @@ async def exec_commend(ipc: IPC, cmd: str):
             print(resp.message)
 
 
-async def check_owned_game(bot: str, appids: list) -> Tuple[list, list]:
+async def check_owned_game(bot: str, appids: List[int]) -> Tuple[list, list]:
     '''检查是否已经拥有'''
     cfg = init_IPC()
     async with IPC(**cfg) as ipc:
@@ -57,7 +58,7 @@ async def check_owned_game(bot: str, appids: list) -> Tuple[list, list]:
     return (owned, not_owned)
 
 
-async def add_free_game(bot: str, appids: list) -> list:
+async def add_free_game(bot: str, appids: List[int]) -> list:
     '''添加免费游戏'''
     cfg = init_IPC()
     async with IPC(**cfg) as ipc:
