@@ -2,7 +2,7 @@
 # @Author       : Chr_
 # @Date         : 2021-02-19 11:21:37
 # @LastEditors  : Chr_
-# @LastEditTime : 2021-03-05 13:45:04
+# @LastEditTime : 2021-03-14 15:56:45
 # @Description  : ASF接口
 '''
 
@@ -52,7 +52,7 @@ async def check_owned_game(bot: str, appids: list) -> Tuple[list, list]:
             else:
                 print(f'{bot} 未拥有 {app}')
                 not_owned.append(app)
-                if len(not_owned) > 40:
+                if len(not_owned) > 100:
                     break
     return (owned, not_owned)
 
@@ -62,12 +62,16 @@ async def add_free_game(bot: str, appids: list) -> list:
     cfg = init_IPC()
     async with IPC(**cfg) as ipc:
         added = []
+        add_count = 0
         for app in appids:
             resp = await exec_commend(ipc, f'addlicense {bot} app/{app}')
             # print(resp)
             if 'sub/' in resp:
                 print(f'{bot} 添加成功 {app}')
                 added.append(app)
+                add_count += 1
             else:
                 print(f'{bot} 添加失败 {app}')
+            if add_count >=45:
+                break
     return added
