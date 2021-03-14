@@ -2,17 +2,17 @@
 # @Author       : Chr_
 # @Date         : 2021-02-19 11:21:37
 # @LastEditors  : Chr_
-# @LastEditTime : 2021-03-14 15:59:21
+# @LastEditTime : 2021-03-14 16:05:00
 # @Description  : ASF接口
 '''
 
-from typing import Tuple
+from typing import List, Tuple
 from cfg import get_cfg
 import asyncio
 from ASF import IPC
 
 # 无法入库的游戏
-BLACK_LIST = {370, 440, 570}
+BLACK_LIST = [370, 440, 570]
 
 
 def init_IPC():
@@ -41,7 +41,7 @@ async def check_owned_game(bot: str, appids: list) -> Tuple[list, list]:
         not_owned = []
         for app in appids:
             if app in BLACK_LIST:
-                owned.append(app)
+                # owned.append(app)
                 continue
 
             resp = await exec_commend(ipc, f'owns {bot} app/{app}')
@@ -52,12 +52,13 @@ async def check_owned_game(bot: str, appids: list) -> Tuple[list, list]:
             else:
                 print(f'{bot} 未拥有 {app}')
                 not_owned.append(app)
-                # if len(not_owned) > 100:
-                #     break
+
+            # if len(not_owned) > 100:
+            #     break
     return (owned, not_owned)
 
 
-async def add_free_game(bot: str, appids: list) -> list:
+async def add_free_game(bot: str, appids: List[int]) -> list:
     '''添加免费游戏'''
     cfg = init_IPC()
     async with IPC(**cfg) as ipc:
@@ -72,6 +73,7 @@ async def add_free_game(bot: str, appids: list) -> list:
                 add_count += 1
             else:
                 print(f'{bot} 添加失败 {app}')
+                BLACK_LIST.append(app)
             if add_count >= 45:
                 break
     return added
