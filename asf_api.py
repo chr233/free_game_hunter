@@ -2,7 +2,7 @@
 # @Author       : Chr_
 # @Date         : 2021-02-19 11:21:37
 # @LastEditors  : Chr_
-# @LastEditTime : 2021-03-14 16:05:00
+# @LastEditTime : 2021-03-14 16:09:41
 # @Description  : ASF接口
 '''
 
@@ -63,17 +63,21 @@ async def add_free_game(bot: str, appids: List[int]) -> list:
     cfg = init_IPC()
     async with IPC(**cfg) as ipc:
         added = []
-        add_count = 0
+        start = False
+        error_count = 0
         for app in appids:
             resp = await exec_commend(ipc, f'addlicense {bot} app/{app}')
             # print(resp)
             if 'sub/' in resp:
                 print(f'{bot} 添加成功 {app}')
                 added.append(app)
-                add_count += 1
+                start = True
+                error_count = 0
             else:
                 print(f'{bot} 添加失败 {app}')
                 BLACK_LIST.append(app)
-            if add_count >= 45:
+                if start:
+                    error_count += 1
+            if error_count >= 50:  # 连续出错50次停止
                 break
     return added
