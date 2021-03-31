@@ -1,5 +1,7 @@
 # Free Game Hunter
 
+使用有风险,后果自负
+
 > 使用asf自动添加steam上的免费游戏
 
 ## 使用方法
